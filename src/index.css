@@ -1,0 +1,229 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Canvas & Surfaces */
+    --background: 220 14% 96%; /* #F3F4F6 Cool Grey 100 */
+    --foreground: 215 28% 17%; /* Dark Navy #1E293B */
+    
+    --card: 0 0% 100%; /* Pure White */
+    --card-foreground: 215 28% 17%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 17%;
+    
+    /* Primary - Teal/Blue accent */
+    --primary: 199 89% 48%; /* #0EA5E9 */
+    --primary-foreground: 0 0% 100%;
+    --primary-muted: 199 89% 48%;
+    
+    /* Secondary - Soft blue */
+    --secondary: 214 95% 93%; /* Light blue bg */
+    --secondary-foreground: 199 89% 48%;
+    
+    /* Muted - Cool greys */
+    --muted: 220 13% 91%; /* #E5E7EB */
+    --muted-foreground: 215 16% 47%; /* Slate 500 */
+    
+    /* Accent */
+    --accent: 220 13% 91%;
+    --accent-foreground: 215 28% 17%;
+    
+    /* Status Colors */
+    --healthy: 160 84% 39%; /* Emerald 500 #10B981 */
+    --healthy-bg: 160 84% 39%;
+    --warning: 38 92% 50%; /* Amber 500 #F59E0B */
+    --warning-bg: 38 92% 50%;
+    --critical: 350 89% 60%; /* Rose 500 #F43F5E */
+    --critical-bg: 350 89% 60%;
+    --neutral: 215 14% 63%; /* Slate 400 #94A3B8 */
+    
+    /* UI Elements */
+    --destructive: 350 89% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 199 89% 48%;
+    
+    --radius: 1rem;
+    
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 16% 47%;
+    --sidebar-primary: 199 89% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 214 95% 93%;
+    --sidebar-accent-foreground: 199 89% 48%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 199 89% 48%;
+    
+    /* Custom shadows */
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.05);
+    --shadow-elevated: 0 4px 6px -1px rgba(0,0,0,0.07), 0 20px 25px -5px rgba(0,0,0,0.05);
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 199 89% 48%;
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 215 20% 65%;
+    --sidebar-primary: 199 89% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 199 89% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Tabular nums for data */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* Card with double shadow */
+  .card-elevated {
+    @apply bg-card rounded-2xl border border-border;
+    box-shadow: var(--shadow-card);
+  }
+  
+  .card-elevated:hover {
+    box-shadow: var(--shadow-elevated);
+  }
+  
+  /* Status pills */
+  .status-healthy {
+    @apply text-healthy bg-healthy/10 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .status-warning {
+    @apply text-warning bg-warning/10 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .status-critical {
+    @apply text-critical bg-critical/10 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  /* Widget header style */
+  .widget-header {
+    @apply text-sm font-semibold uppercase tracking-wide text-muted-foreground;
+  }
+  
+  /* Big number style */
+  .stat-number {
+    @apply text-4xl font-medium text-foreground tabular-nums;
+  }
+  
+  /* Code/log text */
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer utilities {
+  /* Breathing animation for vitals */
+  .animate-breathe {
+    animation: breathe 2s ease-in-out infinite;
+  }
+  
+  @keyframes breathe {
+    0%, 100% { transform: scaleX(1); }
+    50% { transform: scaleX(1.02); }
+  }
+  
+  /* Pulse for live indicator */
+  .animate-pulse-live {
+    animation: pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse-live {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  /* Slide down for new items */
+  .animate-slide-down {
+    animation: slide-down 0.3s ease-out;
+  }
+  
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Flash red animation */
+  .animate-flash-critical {
+    animation: flash-critical 0.5s ease-out;
+  }
+  
+  @keyframes flash-critical {
+    0% { background-color: hsl(var(--critical) / 0.2); }
+    100% { background-color: transparent; }
+  }
+  
+  /* Shimmer loading effect */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted) / 0.5) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  
+  /* Ring progress animation */
+  .animate-ring {
+    animation: ring-fill 1s ease-out forwards;
+  }
+  
+  @keyframes ring-fill {
+    from { stroke-dashoffset: 100; }
+  }
+}
