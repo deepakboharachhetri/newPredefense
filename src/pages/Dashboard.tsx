@@ -30,9 +30,6 @@ const Dashboard = () => {
           {/* Page Header */}
           <div className="mb-6">
             <h1 className="text-2xl font-medium text-foreground">Command Center</h1>
-            <p className="text-muted-foreground mt-1">
-              Real-time threat monitoring and system oversight
-            </p>
           </div>
 
           {/* Bento Grid */}

@@ -58,10 +58,10 @@ export const useAlerts = () => {
 // Block IP Mutation
 export const useBlockIP = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ ip, reason }: { ip: string; reason: string }) => 
-      apiService.blockIP(ip, reason),
+    mutationFn: ({ ip, duration, reason }: { ip: string; duration?: number; reason?: string }) => 
+      apiService.blockIP(ip, duration, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: apiKeys.blockedIPs });
       queryClient.invalidateQueries({ queryKey: apiKeys.threats });

@@ -48,8 +48,6 @@ export const SystemVitalsWidget = () => {
       <h3 className="widget-header mb-6">System Vitals</h3>
       
       <div className="space-y-5">
-        <VitalBar label="CPU Load" value={45} unit="%" color="primary" />
-        <VitalBar label="Memory" value={60} unit="%" color="purple" />
         <VitalBar label="Active Blocks" value={stats?.active_blocks || 0} unit="" color="healthy" />
       </div>
 

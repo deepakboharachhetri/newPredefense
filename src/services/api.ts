@@ -123,12 +123,17 @@ class ApiService {
   }
 
   // Block IP
-  async blockIP(ip: string, reason: string): Promise<ApiResponse<{ success: boolean }>> {
+  // Block IP: backend expects `source_ip` (and optional `duration` in seconds)
+  async blockIP(source_ip: string, duration?: number, reason?: string): Promise<ApiResponse<{ success: boolean }>> {
+    const body: Record<string, any> = { source_ip };
+    if (typeof duration === 'number') body.duration = duration;
+    if (reason) body.reason = reason;
+
     return this.fetchWithTimeout<{ success: boolean }>(
       buildApiUrl(API_CONFIG.REST_API.ENDPOINTS.BLOCKED_IPS),
       {
         method: 'POST',
-        body: JSON.stringify({ ip, reason }),
+        body: JSON.stringify(body),
       }
     );
   }

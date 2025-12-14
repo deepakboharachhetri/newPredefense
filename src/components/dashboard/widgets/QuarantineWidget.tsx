@@ -1,6 +1,7 @@
 import { X, Flag, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useBlockedIPs } from "@/hooks/useApi";
+import { useUnblockIP } from "@/hooks/useApi";
 
 interface BlockedIP {
   id: string;
@@ -57,6 +58,12 @@ export const QuarantineWidget = () => {
     }
   });
 
+  const unblockMut = useUnblockIP();
+
+  const handleUnblock = (ip: string) => {
+    unblockMut.mutate(ip);
+  };
+
   return (
     <div className="card-elevated p-6 row-span-2 animate-fade-in" style={{ animationDelay: "0.3s" }}>
       <div className="flex items-center justify-between mb-4">
@@ -102,7 +109,7 @@ export const QuarantineWidget = () => {
 
             {/* Unblock Button */}
             <button
-              onClick={() => {/* TODO: Implement unblock via API */}}
+              onClick={() => { handleUnblock(ip.ip); }}
               className={cn(
                 "flex-shrink-0 p-1.5 rounded-lg transition-all duration-200",
                 "opacity-0 group-hover:opacity-100",

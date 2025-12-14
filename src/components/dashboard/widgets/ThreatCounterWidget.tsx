@@ -48,17 +48,9 @@ export const ThreatCounterWidget = () => {
         {/* Stats */}
         <div className="flex-1">
           <p className="stat-number">{blocked.toLocaleString()}</p>
-          <div className="flex items-center gap-1 mt-1">
-            <TrendingUp className="w-4 h-4 text-healthy" />
-            <span className="text-sm text-healthy font-medium">+12%</span>
-            <span className="text-sm text-muted-foreground">vs yesterday</span>
-          </div>
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground mt-4">
-        Blocked today • Predicted: 1,532
-      </p>
     </div>
   );
 };
