@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { X, Flag } from "lucide-react";
+import { X, Flag, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useBlockedIPs } from "@/hooks/useApi";
 
 interface BlockedIP {
   id: string;
@@ -11,14 +11,6 @@ interface BlockedIP {
   blockedAt: Date;
   isNew?: boolean;
 }
-
-const initialIPs: BlockedIP[] = [
-  { id: "1", ip: "192.168.0.42", country: "Russia", countryCode: "RU", reason: "SQL Injection", blockedAt: new Date(Date.now() - 1000 * 60 * 2) },
-  { id: "2", ip: "10.0.0.115", country: "China", countryCode: "CN", reason: "Brute Force", blockedAt: new Date(Date.now() - 1000 * 60 * 15) },
-  { id: "3", ip: "172.16.0.89", country: "Nigeria", countryCode: "NG", reason: "DDoS Pattern", blockedAt: new Date(Date.now() - 1000 * 60 * 45) },
-  { id: "4", ip: "192.0.2.100", country: "Iran", countryCode: "IR", reason: "XSS Attempt", blockedAt: new Date(Date.now() - 1000 * 60 * 90) },
-  { id: "5", ip: "203.0.113.50", country: "Brazil", countryCode: "BR", reason: "Path Traversal", blockedAt: new Date(Date.now() - 1000 * 60 * 120) },
-];
 
 const getCountryFlag = (countryCode: string) => {
   // Convert country code to flag emoji
@@ -37,12 +29,33 @@ const formatTimeAgo = (date: Date) => {
 };
 
 export const QuarantineWidget = () => {
-  const [ips, setIps] = useState<BlockedIP[]>(initialIPs);
-  const [, setHoveredId] = useState<string | null>(null);
-
-  const handleUnblock = (id: string) => {
-    setIps((prev) => prev.filter((ip) => ip.id !== id));
-  };
+  const { data: blockedIPsResponse, isLoading, error } = useBlockedIPs();
+  const apiBlockedIPs = Array.isArray(blockedIPsResponse?.data?.data) ? blockedIPsResponse.data.data : [];
+  
+  // Use API data directly without local state for simpler reactivity
+  const ips: BlockedIP[] = apiBlockedIPs.map((item: any, index: number) => {
+    try {
+      return {
+        id: item?.id || `ip-${index}`,
+        ip: item?.ip || 'Unknown',
+        country: item?.country || 'Unknown',
+        countryCode: item?.country_code || 'XX',
+        reason: item?.reason || 'Security threat',
+        blockedAt: item?.blocked_at ? new Date(item.blocked_at) : new Date(),
+        isNew: false,
+      };
+    } catch (e) {
+      return {
+        id: `ip-${index}`,
+        ip: 'Unknown',
+        country: 'Unknown',
+        countryCode: 'XX',
+        reason: 'Error loading data',
+        blockedAt: new Date(),
+        isNew: false,
+      };
+    }
+  });
 
   return (
     <div className="card-elevated p-6 row-span-2 animate-fade-in" style={{ animationDelay: "0.3s" }}>
@@ -54,7 +67,13 @@ export const QuarantineWidget = () => {
       </div>
 
       <div className="space-y-2 max-h-[340px] overflow-y-auto pr-1">
-        {ips.map((ip, index) => (
+        {ips.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+            <Shield className="w-12 h-12 mb-3 opacity-30" />
+            <p className="text-sm">No blocked IPs</p>
+            <p className="text-xs mt-1">System is monitoring traffic</p>
+          </div>
+        ) : ips.map((ip, index) => (
           <div
             key={ip.id}
             className={cn(
@@ -83,7 +102,7 @@ export const QuarantineWidget = () => {
 
             {/* Unblock Button */}
             <button
-              onClick={() => handleUnblock(ip.id)}
+              onClick={() => {/* TODO: Implement unblock via API */}}
               className={cn(
                 "flex-shrink-0 p-1.5 rounded-lg transition-all duration-200",
                 "opacity-0 group-hover:opacity-100",

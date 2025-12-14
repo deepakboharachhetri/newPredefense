@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Shield, Clock, CheckCircle2 } from "lucide-react";
+import { useThreats } from "@/hooks/useApi";
 
 interface Threat {
   id: string;
@@ -17,39 +18,35 @@ interface Threat {
   status: "active" | "resolved" | "investigating";
 }
 
-const mockThreats: Threat[] = [
-  {
-    id: "1",
-    type: "DDoS Attack",
-    severity: "critical",
-    ip: "192.168.1.100",
-    timestamp: new Date(Date.now() - 300000),
-    description: "High volume of requests detected from single IP",
-    status: "active",
-  },
-  {
-    id: "2",
-    type: "SQL Injection Attempt",
-    severity: "critical",
-    ip: "10.0.0.45",
-    timestamp: new Date(Date.now() - 900000),
-    description: "Malicious SQL queries detected in request parameters",
-    status: "investigating",
-  },
-  {
-    id: "3",
-    type: "Brute Force Attack",
-    severity: "warning",
-    ip: "172.16.0.23",
-    timestamp: new Date(Date.now() - 1800000),
-    description: "Multiple failed login attempts detected",
-    status: "resolved",
-  },
-];
-
 const ThreatsAlerts = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [threats] = useState<Threat[]>(mockThreats);
+  const { data: threatsResponse, isLoading, error } = useThreats();
+  const apiThreats = Array.isArray(threatsResponse?.data) ? threatsResponse.data : [];
+  
+  // Format API threats with error handling
+  const threats: Threat[] = apiThreats.map((item: any) => {
+    try {
+      return {
+        id: item?.id || Math.random().toString(),
+        type: item?.type || 'Unknown Threat',
+        severity: item?.severity || 'info',
+        ip: item?.ip || 'Unknown',
+        timestamp: item?.timestamp ? new Date(item.timestamp) : new Date(),
+        description: item?.description || 'No description available',
+        status: item?.status || 'active',
+      };
+    } catch (e) {
+      return {
+        id: Math.random().toString(),
+        type: 'Unknown Threat',
+        severity: 'info' as const,
+        ip: 'Unknown',
+        timestamp: new Date(),
+        description: 'Error loading threat data',
+        status: 'active' as const,
+      };
+    }
+  });
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {

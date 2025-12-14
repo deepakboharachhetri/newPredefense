@@ -30,9 +30,9 @@ export interface ThreatData {
 
 export interface TrafficData {
   timestamp: string;
-  requests: number;
-  blocked: number;
-  allowed: number;
+  inbound: number;
+  outbound: number;
+  threats: number;
 }
 
 export interface BlockedIP {
@@ -45,21 +45,15 @@ export interface BlockedIP {
 }
 
 export interface DashboardStats {
-  total_requests: number;
-  blocked_requests: number;
-  active_threats: number;
-  blocked_ips: number;
-  system_health: 'healthy' | 'warning' | 'critical';
+  events_processed: number;
+  threats_detected: number;
+  active_blocks: number;
+  connected_switches: number;
+  uptime_seconds: number;
 }
 
 // API Service Class
 class ApiService {
-  private baseUrl: string;
-
-  constructor() {
-    this.baseUrl = API_CONFIG.REST_API.BASE_URL;
-  }
-
   // Generic fetch wrapper
   private async fetchWithTimeout<T>(
     url: string,

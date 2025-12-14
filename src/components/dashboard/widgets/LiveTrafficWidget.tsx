@@ -1,26 +1,34 @@
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
-const generateTrafficData = () => {
-  const now = new Date();
-  return Array.from({ length: 24 }, (_, i) => {
-    const hour = new Date(now.getTime() - (23 - i) * 60 * 60 * 1000);
-    return {
-      time: hour.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
-      requests: Math.floor(Math.random() * 500) + 200 + Math.sin(i / 3) * 100,
-    };
-  });
-};
-
-const data = generateTrafficData();
+import { useTrafficData } from "@/hooks/useApi";
 
 export const LiveTrafficWidget = () => {
+  const { data: trafficResponse, isLoading, error } = useTrafficData('24h');
+  const trafficData = trafficResponse?.data || [];
+  
+  // Format data for chart - get last 24 entries with safe access
+  const chartData = Array.isArray(trafficData) ? trafficData.slice(-24).map((item: any) => {
+    try {
+      return {
+        time: new Date(item?.timestamp || Date.now()).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+        requests: (item?.inbound || 0) + (item?.outbound || 0),
+      };
+    } catch (e) {
+      return { time: "00:00", requests: 0 };
+    }
+  }) : [];
+  
+  // Calculate current req/s (average from last entry)
+  const latest = trafficData[trafficData.length - 1];
+  const currentReqs = latest ? Math.floor(((latest.inbound || 0) + (latest.outbound || 0)) / 60) : 0;
+  
+  const data = chartData.length > 0 ? chartData : [{ time: "00:00", requests: 0 }];
   return (
     <div className="card-elevated p-6 col-span-2 animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="widget-header">Live Traffic</h3>
           <p className="text-2xl font-medium text-foreground mt-1 tabular-nums">
-            1,247 <span className="text-sm text-muted-foreground font-normal">req/s</span>
+            {currentReqs.toLocaleString()} <span className="text-sm text-muted-foreground font-normal">req/s</span>
           </p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-critical/10">

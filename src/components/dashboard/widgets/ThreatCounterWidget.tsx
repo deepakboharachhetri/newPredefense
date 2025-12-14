@@ -1,8 +1,13 @@
 import { TrendingUp } from "lucide-react";
+import { useDashboardStats } from "@/hooks/useApi";
 
 export const ThreatCounterWidget = () => {
-  const blocked = 1042;
-  const progress = 68; // percentage of daily predicted threats
+  const { data: statsResponse, isLoading, error } = useDashboardStats();
+  const stats = statsResponse?.data;
+  
+  const blocked = stats?.threats_detected || 0;
+  const eventsProcessed = stats?.events_processed || 0;
+  const progress = eventsProcessed > 0 ? Math.min(Math.round((blocked / Math.max(eventsProcessed, 1)) * 100), 100) : 0;
 
   return (
     <div className="card-elevated p-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>

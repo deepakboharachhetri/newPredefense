@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useDashboardStats } from "@/hooks/useApi";
 
 interface VitalBarProps {
   label: string;
@@ -36,6 +37,12 @@ const VitalBar = ({ label, value, unit, color }: VitalBarProps) => {
 };
 
 export const SystemVitalsWidget = () => {
+  const { data: statsResponse } = useDashboardStats();
+  const stats = statsResponse?.data;
+  
+  const connectedSwitches = stats?.connected_switches || 0;
+  const uptimeHours = Math.floor((stats?.uptime_seconds || 0) / 3600);
+  
   return (
     <div className="card-elevated p-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
       <h3 className="widget-header mb-6">System Vitals</h3>
@@ -43,13 +50,15 @@ export const SystemVitalsWidget = () => {
       <div className="space-y-5">
         <VitalBar label="CPU Load" value={45} unit="%" color="primary" />
         <VitalBar label="Memory" value={60} unit="%" color="purple" />
-        <VitalBar label="MongoDB Latency" value={12} unit="ms" color="healthy" />
+        <VitalBar label="Active Blocks" value={stats?.active_blocks || 0} unit="" color="healthy" />
       </div>
 
       <div className="mt-4 pt-4 border-t border-border">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-healthy" />
-          <span className="text-xs text-muted-foreground">All systems nominal</span>
+          <span className="text-xs text-muted-foreground">
+            {connectedSwitches} switch{connectedSwitches !== 1 ? 'es' : ''} connected • Uptime: {uptimeHours}h
+          </span>
         </div>
       </div>
     </div>

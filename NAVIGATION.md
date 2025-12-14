@@ -12,7 +12,6 @@
 - BentoGrid (feature showcase)
 - DeepDive (detailed features)
 - Testimonials
-- Pricing
 - Footer
 
 **Navigation:**

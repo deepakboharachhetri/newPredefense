@@ -1,19 +1,26 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-
-const generateHistoricalData = () => {
-  return Array.from({ length: 30 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (29 - i));
-    return {
-      date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      volume: Math.floor(Math.random() * 50000) + 10000,
-    };
-  });
-};
-
-const data = generateHistoricalData();
+import { useTrafficData } from "@/hooks/useApi";
 
 export const HistoricalWidget = () => {
+  const { data: trafficResponse, isLoading, error } = useTrafficData('24h');
+  const trafficData = Array.isArray(trafficResponse?.data) ? trafficResponse.data : [];
+  
+  // Format data for chart - take samples every hour with safe access
+  const chartData = trafficData.filter((_: any, i: number) => i % 4 === 0).slice(-30).map((item: any) => {
+    try {
+      return {
+        date: new Date(item?.timestamp || Date.now()).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        volume: (item?.inbound || 0) + (item?.outbound || 0),
+      };
+    } catch (e) {
+      return { date: "--", volume: 0 };
+    }
+  });
+  
+  const data = chartData.length > 0 ? chartData : [{ date: "--", volume: 0 }];
+  const totalLogs = trafficData.reduce((sum: number, item: any) => sum + (item?.inbound || 0) + (item?.outbound || 0), 0);
+  const displayTotal = totalLogs > 1000000 ? `${(totalLogs / 1000000).toFixed(1)}M` : 
+                       totalLogs > 1000 ? `${(totalLogs / 1000).toFixed(1)}K` : totalLogs.toString();
   return (
     <div className="card-elevated p-6 col-span-2 animate-fade-in" style={{ animationDelay: "0.4s" }}>
       <div className="flex items-center justify-between mb-6">
@@ -25,7 +32,7 @@ export const HistoricalWidget = () => {
         </div>
         <div className="text-right">
           <p className="text-2xl font-medium text-foreground tabular-nums">
-            1.2M
+            {displayTotal}
           </p>
           <p className="text-xs text-muted-foreground">Total logs</p>
         </div>
